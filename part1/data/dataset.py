@@ -5,12 +5,13 @@ import torchvision
 from constants import params
 import cv2
 from utils import mnist_reader
+import pandas as pd
 
 torch.manual_seed(params['manual_seed'])
 
 class FashionMNIST(torch.utils.data.Dataset):
     def __init__(self, params, kind = 'train'):
-        path = 'data/{}'.format(kind)
+        self.path = 'data/{}'.format(kind)
         self.shape = (params['image_height'], params['image_width'])
         self.to_rotate = params['rotate_images']
         self.to_normalise = params['normalise_images']
@@ -38,8 +39,9 @@ class FashionMNIST(torch.utils.data.Dataset):
         self.transforms = torch.nn.Sequential(
             *transforms
         )
-        x, y = mnist_reader.load_mnist(path, kind = kind)
-        self.data = list(zip(x, y))
+        self.kind = kind
+        self.info = pd.read_csv(os.path.join(self.path, 'info.csv'))
+        self.data = self.info.values
 
     def img_transform(self, img):
         # 0-255 to 0-1
@@ -56,8 +58,10 @@ class FashionMNIST(torch.utils.data.Dataset):
             # Color images are stored as (H, W, C) arrays
             # Grayscale images are flattened
             # Both of which are transformed to (C, H, W)
-            image = image.reshape(1, self.shape[0], self.shape[1])
+            image = cv2.imread(os.path.join(self.path, image), cv2.IMREAD_GRAYSCALE)
+            image = np.expand_dims(image, 0)
         else:
+            image = cv2.imread(os.path.join(self.path, image), cv2.IMREAD_COLOR)
             image = image.transpose(2, 0, 1)
         image = image.copy().astype(np.float32) / 255.0
         image = self.img_transform(torch.from_numpy(image))

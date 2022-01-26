@@ -6,7 +6,7 @@ params = {
     'image_width'                    : 28,
     'shuffle_dataset'                : True,
     'rotate_images'                  : True,
-    'normalise_images'               : True,
+    'normalise_images'               : False,
     'manual_seed'                    : 117,
     'is_image_color'                 : False,
     'normalise_mean'                 : [0.5],
