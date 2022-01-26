@@ -71,4 +71,36 @@ params = {
                                             },
                                         ],
     'n_classes'                      : 10,
+    'num_epochs'                     : 10,
+    'eval_freq'                      : 5,
+    'save_freq'                      : 5,
+    'optim_class'                    : torch.optim.SGD,
+    'optim_kwargs'                   : {
+                                            # All kwargs other than learning rate here
+                                            'momentum' : 0,
+                                            'dampening' : 0,
+                                            'weight_decay' : 1e-2,
+                                            'nesterov' : False
+                                        },
+    'learning_rate'                  : 1e-3,
+    'learning_rate_schedule'         : [
+                                            {
+                                                'name' : 'ExponentialLRSchedule',
+                                                'class' : torch.optim.lr_scheduler.ExponentialLR,
+                                                'kwargs' : {
+                                                    'gamma' : 0.99,
+                                                    'last_epoch' : - 1,
+                                                    'verbose' : False
+                                                }
+                                            }, {
+                                                'name' : 'ReduceLROnPlateauSchedule',
+                                                'class' : torch.optim.lr_scheduler.ReduceLROnPlateau,
+                                                'kwargs' : {
+                                                    'mode' : 'min',
+                                                    'factor' : 0.5,
+                                                    'patience' : 10,
+                                                    'threshold' : 1e-3,
+                                                }
+                                            }
+                                        ],
 }

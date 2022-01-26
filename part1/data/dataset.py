@@ -61,7 +61,7 @@ class FashionMNIST(torch.utils.data.Dataset):
             image = image.transpose(2, 0, 1)
         image = image.copy().astype(np.float32) / 255.0
         image = self.img_transform(torch.from_numpy(image))
-        return image, torch.from_numpy(np.array([label], dtype = np.uint8))
+        return image, torch.from_numpy(np.array(label, dtype = np.int64))
 
 def get_dataloader(params, kind):
     dataset = FashionMNIST(params, kind)
