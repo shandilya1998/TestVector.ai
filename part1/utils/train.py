@@ -3,10 +3,6 @@ from data.dataset import get_dataloader
 import os
 from torch.utils import tensorboard
 from constants import params
-if params['mode'] == 'notebook':
-    from tqdm import tqdm_notebook as tqdm:
-else:
-    from tqdm import tqdm
 def train(
         params,
         model,
@@ -15,8 +11,6 @@ def train(
         datadir,
         logdir
     ):
-    if params['mode'] == 'notebook':
-        from tqdm.notebook import tqdm
     train_loader = get_dataloader(params, 'train')
     test_loader = get_dataloader(params, 'test')
     writer = tensorboard.SummaryWriter(
@@ -32,28 +26,30 @@ def train(
             for scheduler in params['learning_rate_schedule']
     }
     model_path = os.path.join(logdir, 'model.pt')
-    epoch_bar = tqdm(total = params['num_epochs'], position = 0)
-    train_bar = tqdm(total = len(train_loader), position = 1)
-    test_bar = tqdm(total = len(test_loader), position = 2)
     for epoch in range(params['num_epochs']):
         avg_val_metric = 0.0
+        avg_epoch_loss = 0.0
         is_metric_available = False
         for i, (x, y) in enumerate(train_loader):
             x, y = x.to(params['device']), y.to(params['device'])
             loss, metrics = train_step(x, y, model, optim)
+            avg_epoch_loss += loss
             writer.add_scalar('loss/train', loss, epoch * len(train_loader) + i)
-            train_bar.update(1)
             if metrics:
                 for key, metric in metrics.items():
                     writer.add_scalar('{}/train'.format(key), metric, epoch * len(train_loader) + i)
+        avg_epoch_loss = avg_epoch_loss / len(train_loader)
+        print('Epoch {} done. Average Epoch Loss {:.4f}'.format(epoch, avg_epoch_loss))
+        writer.add_scalar('avg_loss/train', avg_epoch_loss, epoch)
         if epoch % params['eval_freq'] == 0:
             count = 0
+            avg_val_epoch_loss = 0.0
             for i, (x, y) in enumerate(test_loader):
                 x, y = x.to(params['device']), y.to(params['device'])
                 loss, metrics = test_step(x, y, model)
+                avg_val_epoch_loss += loss
                 writer.add_scalar('loss/test', loss, (epoch % params['eval_freq']) * len(test_loader) + i)
                 count += 1
-                test_bar.update(1)
                 # Only the first metric determines when lr is decreased with plateau
                 if metrics:
                     is_metric_available = True
@@ -61,11 +57,11 @@ def train(
                     for key, metric in metrics.items():
                         writer.add_scalar('{}/test'.format(key), metric, (epoch % params['eval_freq']) * len(test_loader) + i)
             assert count > 0
+            avg_val_epoch_loss = avg_val_epoch_loss / count
+            print('----------------------------------------------')
+            print('Evaluation {} done. Average Loss {:.4f}'.format(epoch % params['eval_freq'],  avg_val_epoch_loss))
+            print('----------------------------------------------')
             avg_val_metric = avg_val_metric / count
-            test_bar.refresh()
-            test_bar.reset()
-        train_bar.refresh()
-        train_bar.reset()
         if epoch % params['save_freq'] == 0:
             state_dict = {
                 'model_state_dict' : model.state_dict(),
@@ -81,10 +77,4 @@ def train(
                     item.step(avg_val_metric)
             else:
                 item.step()
-        epoch_bar.update(1)
-    epoch_bar.refresh()
-    epoch_bar.reset()
-    epoch_bar.close()
-    train_bar.close()
-    test_bar.close()
     return True
