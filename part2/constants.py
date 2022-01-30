@@ -3,5 +3,8 @@ params = {
     'PUB_SUB_TOPIC'                  : 'python-tester',
     'PUB_SUB_PROJECT'                : 'neuroengineering-334116',
     'PUB_SUB_SUBSCRIPTION'           : 'python-tester-sub',
-    'timeout'                        : 3.0,
+    'TIMEOUT'                        : 3.0,
+
+    'KAFKA_HOST'                     : 'localhost:9092',
+    'KAFKA_TOPIC'                    : 'python-tester'
 }
