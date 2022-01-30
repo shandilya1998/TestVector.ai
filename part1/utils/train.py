@@ -41,14 +41,16 @@ def train(
             if metrics:
                 for key, metric in metrics.items():
                     writer.add_scalar('{}/train'.format(key), metric)
-
+            tqdm._instances.clear()
         if epoch % params['eval_freq'] == 0:
             count = 0
             for x, y in test_loader:
+                x, y = x.to(params['device']), y.to(params['device'])
                 loss, metrics = test_step(x, y, model)
                 writer.add_scalar('loss/test', loss)
                 count += 1
                 test_bar.update(1)
+                tqdm._instances.clear()
                 # Only the first metric determines when lr is decreased with plateau
                 if metrics:
                     is_metric_available = True
