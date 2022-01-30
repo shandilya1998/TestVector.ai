@@ -35,21 +35,21 @@ def train(
     for epoch in range(params['num_epochs']):
         avg_val_metric = 0.0
         is_metric_available = False
-        for x, y in train_loader:
+        for i, (x, y) in enumerate(train_loader):
             x, y = x.to(params['device']), y.to(params['device'])
             loss, metrics = train_step(x, y, model, optim)
-            writer.add_scalar('loss/train', loss)
+            writer.add_scalar('loss/train', loss, epoch * len(train_loader) + i)
             train_bar.update(1)
             if metrics:
                 for key, metric in metrics.items():
-                    writer.add_scalar('{}/train'.format(key), metric)
+                    writer.add_scalar('{}/train'.format(key), metric, epoch * len(train_loader) + i)
             tqdm._instances.clear()
         if epoch % params['eval_freq'] == 0:
             count = 0
-            for x, y in test_loader:
+            for i, (x, y) in enumerate(test_loader):
                 x, y = x.to(params['device']), y.to(params['device'])
                 loss, metrics = test_step(x, y, model)
-                writer.add_scalar('loss/test', loss)
+                writer.add_scalar('loss/test', loss, (epoch % params['eval_freq']) * len(test_loader) + i)
                 count += 1
                 test_bar.update(1)
                 tqdm._instances.clear()
@@ -58,7 +58,7 @@ def train(
                     is_metric_available = True
                     avg_val_metric += metrics[0]
                     for key, metric in metrics.items():
-                        writer.add_scalar('{}/test'.format(key), metric)
+                        writer.add_scalar('{}/test'.format(key), metric, (epoch % params['eval_freq']) * len(test_loader) + i)
             assert count > 0
             avg_val_metric = avg_val_metric / count
             test_bar.refresh()
