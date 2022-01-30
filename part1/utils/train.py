@@ -3,6 +3,7 @@ from data.dataset import get_dataloader
 import os
 from torch.utils import tensorboard
 from constants import params
+
 def train(
         params,
         model,
@@ -59,7 +60,7 @@ def train(
             assert count > 0
             avg_val_epoch_loss = avg_val_epoch_loss / count
             print('----------------------------------------------')
-            print('Evaluation {} done. Average Loss {:.8f}'.format(epoch % params['eval_freq'],  avg_val_epoch_loss))
+            print('Evaluation {} done. Average Loss {:.8f}'.format(int(epoch / params['eval_freq']),  avg_val_epoch_loss))
             print('----------------------------------------------')
             avg_val_metric = avg_val_metric / count
         if epoch % params['save_freq'] == 0:

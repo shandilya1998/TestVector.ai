@@ -13,19 +13,19 @@ class FashionMNIST(torch.utils.data.Dataset):
     def __init__(self, params, kind = 'train'):
         self.path = 'data/{}'.format(kind)
         self.shape = (params['image_height'], params['image_width'])
-        self.to_rotate = params['rotate_images']
+        self.to_flip = params['flip_images']
         self.to_normalise = params['normalise_images']
         self.is_color = params['is_image_color']
-        self.to_transform = self.to_rotate or self.to_normalise
+        self.to_transform = self.to_flip or self.to_normalise
         if self.is_color:
             assert len(params['normalise_mean']) == 3 and len(params['normalise_std']) == 3
         transforms = []
-        if self.to_rotate:
+        if self.to_flip:
             transforms.append(
-                torchvision.transforms.RandomRotation(
-                    180,
-
-                )
+                torchvision.transforms.RandomHorizontalFlip(p = params['flip_probability'])
+            )
+            transforms.append(
+                torchvision.transforms.RandomVerticalFlip(p = params['flip_probability'])
             )
         if self.to_normalise:
             transforms.append(
