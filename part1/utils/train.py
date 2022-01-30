@@ -34,6 +34,7 @@ def train(
         avg_val_metric = 0.0
         is_metric_available = False
         for x, y in train_loader:
+            x, y = x.to(params['device']), y.to(params['device'])
             loss, metrics = train_step(x, y, model, optim)
             writer.add_scalar('loss/train', loss)
             train_bar.update(1)

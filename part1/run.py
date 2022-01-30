@@ -30,7 +30,7 @@ def test_step(x, y, model):
 if __name__ == '__main__':
     datadir = 'data'
     logdir = 'logs'
-    model = build_classifier(params)
+    model = build_classifier(params).to(params['device'])
     done = train(
         params,
         model,    

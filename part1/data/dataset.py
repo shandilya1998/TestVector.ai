@@ -39,6 +39,7 @@ class FashionMNIST(torch.utils.data.Dataset):
         self.transforms = torch.nn.Sequential(
             *transforms
         )
+        self.device = params['device']
         self.kind = kind
         self.info = pd.read_csv(os.path.join(self.path, 'info.csv'))
         self.data = self.info.values
@@ -65,7 +66,8 @@ class FashionMNIST(torch.utils.data.Dataset):
             image = image.transpose(2, 0, 1)
         image = image.copy().astype(np.float32) / 255.0
         image = self.img_transform(torch.from_numpy(image))
-        return image, torch.from_numpy(np.array(label, dtype = np.int64))
+        label = torch.from_numpy(np.array(label, dtype = np.int64))
+        return image, label
 
 def get_dataloader(params, kind):
     dataset = FashionMNIST(params, kind)
