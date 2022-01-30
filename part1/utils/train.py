@@ -4,7 +4,7 @@ import os
 from torch.utils import tensorboard
 from constants import params
 if params['mode'] == 'notebook':
-    from tqdm import tqdm_notebooks as tqdm
+    from tqdm import tqdm_notebook as tqdm:
 else:
     from tqdm import tqdm
 def train(
