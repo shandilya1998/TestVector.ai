@@ -2,8 +2,11 @@ import torch
 from data.dataset import get_dataloader
 import os
 from torch.utils import tensorboard
-from tqdm import tqdm
-
+from constants import params
+if params['mode'] == 'notebook'
+    from tqdm import tqdm_notebooks as tqdm
+else:
+    from tqdm import tqdm
 def train(
         params,
         model,
