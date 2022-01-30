@@ -12,6 +12,8 @@ def train(
         datadir,
         logdir
     ):
+    if params['mode'] == 'notebook':
+        from tqdm.notebook import tqdm
     train_loader = get_dataloader(params, 'train')
     test_loader = get_dataloader(params, 'test')
     writer = tensorboard.SummaryWriter(
