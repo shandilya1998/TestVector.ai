@@ -38,7 +38,7 @@ def test_step(x, y, model):
 if __name__ == '__main__':
     set_seeds(params['manual_seed'])
     datadir = 'data'
-    logdir = 'logs'
+    logdir = '/content/drive/MyDrive/Vector/exp1'
     model = build_classifier(params).to(params['device'])
     done = train(
         params,
