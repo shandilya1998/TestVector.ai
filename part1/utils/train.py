@@ -39,7 +39,7 @@ def train(
                 for key, metric in metrics.items():
                     writer.add_scalar('{}/train'.format(key), metric, epoch * len(train_loader) + i)
         avg_epoch_loss = avg_epoch_loss / len(train_loader)
-        print('Epoch {} done. Average Epoch Loss {:.4f}'.format(epoch, avg_epoch_loss))
+        print('Epoch {} done. Average Epoch Loss {:.8f}'.format(epoch, avg_epoch_loss))
         writer.add_scalar('avg_loss/train', avg_epoch_loss, epoch)
         if epoch % params['eval_freq'] == 0:
             count = 0
@@ -59,7 +59,7 @@ def train(
             assert count > 0
             avg_val_epoch_loss = avg_val_epoch_loss / count
             print('----------------------------------------------')
-            print('Evaluation {} done. Average Loss {:.4f}'.format(epoch % params['eval_freq'],  avg_val_epoch_loss))
+            print('Evaluation {} done. Average Loss {:.8f}'.format(epoch % params['eval_freq'],  avg_val_epoch_loss))
             print('----------------------------------------------')
             avg_val_metric = avg_val_metric / count
         if epoch % params['save_freq'] == 0:

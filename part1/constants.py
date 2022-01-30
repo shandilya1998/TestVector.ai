@@ -82,13 +82,13 @@ params = {
                                             'weight_decay' : 1e-2,
                                             'nesterov' : False
                                         },
-    'learning_rate'                  : 1e-3,
+    'learning_rate'                  : 1e-1,
     'learning_rate_schedule'         : [
                                             {
                                                 'name' : 'ExponentialLRSchedule',
                                                 'class' : torch.optim.lr_scheduler.ExponentialLR,
                                                 'kwargs' : {
-                                                    'gamma' : 0.99,
+                                                    'gamma' : 0.95,
                                                     'last_epoch' : - 1,
                                                     'verbose' : False
                                                 }
@@ -99,7 +99,7 @@ params = {
                                                     'mode' : 'min',
                                                     'factor' : 0.5,
                                                     'patience' : 10,
-                                                    'threshold' : 1e-3,
+                                                    'threshold' : 1e-5,
                                                 }
                                             }
                                         ],
