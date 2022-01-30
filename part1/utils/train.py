@@ -3,7 +3,7 @@ from data.dataset import get_dataloader
 import os
 from torch.utils import tensorboard
 from constants import params
-if params['mode'] == 'notebook'
+if params['mode'] == 'notebook':
     from tqdm import tqdm_notebooks as tqdm
 else:
     from tqdm import tqdm
@@ -46,7 +46,6 @@ def train(
             if metrics:
                 for key, metric in metrics.items():
                     writer.add_scalar('{}/train'.format(key), metric, epoch * len(train_loader) + i)
-            tqdm._instances.clear()
         if epoch % params['eval_freq'] == 0:
             count = 0
             for i, (x, y) in enumerate(test_loader):
@@ -55,7 +54,6 @@ def train(
                 writer.add_scalar('loss/test', loss, (epoch % params['eval_freq']) * len(test_loader) + i)
                 count += 1
                 test_bar.update(1)
-                tqdm._instances.clear()
                 # Only the first metric determines when lr is decreased with plateau
                 if metrics:
                     is_metric_available = True
