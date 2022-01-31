@@ -54,13 +54,13 @@ if __name__ == '__main__':
             torchmetrics.Precision(params['n_classes'], average = 'macro'),
             torchmetrics.Recall(params['n_classes'], average = 'macro'),
             torchmetrics.F1Score(params['n_classes'], average = 'macro')
-        ]),
+        ]).to(params['device']),
         'test_torchmetrics' : torchmetrics.MetricCollection([
             torchmetrics.Accuracy(num_classes = params['n_classes'], compute_on_step = False, average = 'macro'),
             torchmetrics.Precision(params['n_classes'], compute_on_step = False, average = 'macro'),
             torchmetrics.Recall(params['n_classes'], compute_on_step = False, average = 'macro'),
             torchmetrics.F1Score(params['n_classes'], compute_on_step = False, average = 'macro')
-        ])
+        ].to(params['device']))
     }
 
     done = train(
