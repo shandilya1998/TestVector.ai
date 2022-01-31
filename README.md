@@ -323,3 +323,71 @@ def loss_func(y_pred, y):
     )
 ```
 
+
+### Model Building
+The API provides a factory function for creating a classifier `torch.nn.Module`.
+Model Builder is declared in [models/builder.py](models/builder.py).
+The following is the method signature:
+
+```
+def build_classifier(params) -> torch.nn.Module
+```
+
+The following items in `params` are used in the method and must be defined:
+- `image_height`
+- `image_width`
+- `is_image_color`
+- `net_arch`
+
+The method appends a Fully Connected Layer followed my Softmax Activation so that the network outputs classification probabilities.
+
+### Dataset API
+
+The image classification pipeline can read grayscale and color images and train a classification model appropriately
+The training images must be stored in the folder [data/train](data/train).
+The target values are stored in [data/train/info.csv](data/train/info.csv) with two columns: `files` and `type` where `files` is the image file name and `type` is the classification label.
+
+The FashionMNIST dataset is available as a zip file containing a numpy array of all images and labels in 
+`train-images-idx3-ubyte.gz`, 
+`train-labels-idx1-ubyte.gz`, 
+`test-labels-idx1-ubyte.gz` and 
+`test-images-idx3-ubyte.gz`. 
+If the data is similar to aforementioned format, run the python script [save_data.py](save_data.py) to unzip and store data appropriately for pipeline to work.
+
+### Sample Use Case
+
+```
+set_seeds(params['manual_seed'])
+datadir = 'data'
+logdir = 'logs'
+model = build_classifier(params).to(params['device']) 
+kwargs = { 
+    'train_torchmetrics' : torchmetrics.MetricCollection([
+        torchmetrics.Accuracy(num_classes = params['n_classes'], average = 'macro'),
+        torchmetrics.Precision(params['n_classes'], average = 'macro'),
+        torchmetrics.Recall(params['n_classes'], average = 'macro'),
+        torchmetrics.F1Score(params['n_classes'], average = 'macro')
+    ]).to(params['device']),
+    'test_torchmetrics' : torchmetrics.MetricCollection([
+        torchmetrics.Accuracy(num_classes = params['n_classes'], compute_on_step = False, average = 'macro'),
+        torchmetrics.Precision(params['n_classes'], compute_on_step = False, average = 'macro'),
+        torchmetrics.Recall(params['n_classes'], compute_on_step = False, average = 'macro'),
+        torchmetrics.F1Score(params['n_classes'], compute_on_step = False, average = 'macro')
+    ]).to(params['device'])
+}
+
+done = train(
+    params,
+    model,
+    train_step,
+    test_step,
+    datadir,
+    logdir,
+    **kwargs
+)
+if done:
+    print('Training Done.')
+
+```
+
+
