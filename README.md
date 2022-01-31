@@ -214,9 +214,11 @@ The following are the declared keys for Google Pub/Sub config:
 - `PUB_SUB_PROJECT` : Project Name for service account used
 - `PUB_SUB_SUBSCRIPTION` : Subscription name to subscribe for pulling messages from Google Pub/Sub. The subscription must be created with the topic.
 - `TIMEOUT` : Timeout for Google Pub/Sub
+
 The following are the declared keys for Apache Kafka config:
 - `KAFKA_HOST` : Host for Apache Kafka Broker. Defaut port: 9092 used
 - `KAFKA_TOPIC` : Kafka Topic to publish to and subscribe from
+
 The following are the declared keys for Deep Learning config:
 - `batch_size`: Batch Size to be used during training
 - `image_height` : Image Height input to the model
