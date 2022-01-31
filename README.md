@@ -354,6 +354,19 @@ The FashionMNIST dataset is available as a zip file containing a numpy array of 
 `test-images-idx3-ubyte.gz`. 
 If the data is similar to aforementioned format, run the python script [save_data.py](save_data.py) to unzip and store data appropriately for pipeline to work.
 
+#### FashionMNIST Dataset
+The API provides a simple interface for loading the data in [data](data). 
+`class FashionMNIST` inherits from `torch.utils.data.Dataset` and takes the following two arguments during initialisation:
+- `params`
+- 'kind': test or train identifier.
+
+#### Dataloader Builder
+The FashionMNIST dataset can be directly loaded into a dataloader for training.
+The following is the function signature:
+```
+get_dataloader(params, kind) -> torch.utils.data.DataLoader
+```
+
 ### Sample Use Case
 
 ```
@@ -389,5 +402,105 @@ if done:
     print('Training Done.')
 
 ```
+
+# Streaming API
+The Streaming API provides methods for interfacing with Google Pub\Sub and Apache Kafka.
+The API builds on top of the python packages `google-cloud-pubsub` and `kafka-python`. 
+Google Cloud SDK and Apache Kafka binaries must be available to run the Streaming API.
+
+## Google Pub/Sub
+Streaming API endpoints for Google Pub/Sub are declared in [pubsub.py](pubsub.py).
+The following methods are available:
+- `def publish_payload(params, publisher, payload, topic, **kwargs)`
+- `def consume_payload(params, subscription, callback, subscriber, **kwargs)`
+
+Provision for additional arguments for the `google-cloud-pubsub` package  methods is provided through `**kwargs`.
+
+The following sample depicts usage of the aforementioned methods:
+```
+publisher = ps.PublisherClient()
+step = 0 
+img = cv2.imread(os.path.join('assets', 'FashionMNIST_0.png'), cv2.IMREAD_GRAYSCALE)
+while step < 5:
+    print("===================================")
+    payload = {"data" : 'Payload Data', "timestamp": time.time(), "image" : img.tolist()}
+    print(f"Sending payload: {payload}.")
+    publish_payload(params, publisher, payload, params['PUB_SUB_TOPIC'])
+    subscriber = ps.SubscriberClient()
+    consume_payload(params, params['PUB_SUB_SUBSCRIPTION'], process_payload, subscriber)
+    step += 1
+```
+
+`def process_payload(message)` must be defined by the user to process the received message and must contain a 'message.ack()' call followed by the message processing statements.
+The following is a sample implementation:
+```
+def process_payload(message):
+    message.ack()
+    message = json.loads(message.data)
+    print("Received {}.".format(message))
+```
+
+Run [pubsub.py](pubsub.py) to view streaming demo.
+
+## Apache Kafka
+Streaming API endpoints for Apache Kafka are declared in [kf.py](kf.py).
+The following methods are available:
+- `def publish_payload(params, publisher, payload, topic, **kwargs)`
+- `def consume_payload(params, consumer, topic, callback, **kwargs)`
+
+`def process_payload(message)` must be defined by the user to process the received message.
+The following is a sample implementation for usage of the aforementioned methods:
+```
+import json
+import time
+import os
+from constants import params
+import threading
+import cv2 
+import numpy as np
+
+def process_payload(message):
+    print("===================================")
+    print("Received")
+    print("===================================")
+    payload = json.loads(message.value)
+    img = np.array(payload['image'], dtype = np.uint8)
+    cv2.imshow('decoded', img)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        pass
+
+def start_producing():
+    publisher = kf.KafkaProducer(bootstrap_servers = params['KAFKA_HOST'])
+    step = 0 
+    img = cv2.imread(os.path.join('assets', 'FashionMNIST_0.png'), cv2.IMREAD_GRAYSCALE)
+    while True:
+        print("===================================")
+        #cv2.imshow('original', img)
+        #if cv2.waitKey(1) & 0xFF == ord('q'):
+        #    pass
+        payload = {"data" : "Payload data", "image" : img.tolist(), "timestamp": time.time()}
+        print("Sending payload")
+        print("===================================")
+        publish_payload(params, publisher, payload, params['KAFKA_TOPIC'])
+        step += 1
+    
+def start_consuming():
+    while True:
+        consumer = kf.KafkaConsumer(params['KAFKA_TOPIC'], bootstrap_servers = params['KAFKA_HOST'])
+        consume_payload(params, consumer, params['KAFKA_TOPIC'], process_payload)
+
+if __name__ == '__main__':
+    threads = []
+    t = threading.Thread(target=start_producing)
+    t2 = threading.Thread(target=start_consuming)
+    threads.append(t)
+    threads.append(t2)
+    t.start()
+    t2.start()
+```
+
+Run [kf.py](kf.py) for streaming demo.
+[start_kafka.sh](start_kafka.sh) must be executed and topics must be created using Apache Kafka console scripts before running the script.
+
 
 
