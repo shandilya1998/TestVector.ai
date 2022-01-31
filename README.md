@@ -245,4 +245,81 @@ The following are the declared keys for Deep Learning config:
 - `eval_metric_compute_freq` : Compute Evaluation Metrics every `params['eval_metric_compute_freq']`. Default `epoch`.
 - `eval_batch_size` : Evaluation Batch Size. Default `1`
 
+## Train API
+
+Model Training is facilitated through the `def train(**kwargs)` defined in [utils/train.py](utils/train.py)
+The method signature is as follows:
+```
+def train(
+        params,
+        model,
+        train_step,
+        test_step,
+        datadir,
+        logdir,
+        **kwargs
+    ) -> bool
+```
+
+The following are the arguments required by `def train(**kwargs)`
+- `params` contains the configuration for all the training components such as the optimiser, learning rate schedulers and metrics.
+- `model` is the `torch.nn.Module` of the classifier
+- `train_step` is a method that takes the inputs and targets to compute and apply gradients
+- `test_step` is a method that takes the validation input and targets to compute evaluation loss and metrics
+- `datadir` is the relative path to the directory storing the data
+- `logdir` is the directory used to store `Tensorboard` logs and saved model files
+- `**kwargs` are the additional arguments such as `train_torchmetrics` and `test_torchmetrics`
+
+### Train Step
+`def train_step(**kwargs)` is passed to `def train(**kwargs)` and is called to compute and apply gradients.
+This method needs to be defined by the user.
+The following is a sample `def train_step(**kwargs)`:
+
+```
+def train_step(x, y, model, optim, **kwargs):
+    optim.zero_grad()
+    y_pred = model(x)
+    loss = loss_func(y_pred, y)
+    loss.backward()
+    optim.step()
+    metrics = None
+    if 'train_torchmetrics' in kwargs.keys():
+        metrics = kwargs['train_torchmetrics'](y_pred, y)
+        metrics = {key : item.item() for key, item in metrics.items()}
+    return loss.item(), metrics
+```
+
+Any Implementation must return the float loss and dict of float metrics
+### Test Step
+`def test_step(**kwargs)` is passed to `def train(**kwargs)` and is called to compute validation metrics and loss.
+This method needs to be defined by the user.
+The following is a sample `def train_step(**kwargs)`:
+
+```
+def test_step(x, y, model, **kwargs):
+    with torch.no_grad():
+        y_pred = model(x)
+    loss = loss_func(y_pred, y)
+    metrics = None
+    if 'test_torchmetrics' in kwargs.keys():
+        metrics = kwargs['test_torchmetrics'](y_pred, y)
+        if params['eval_metric_compute_freq'] == 'epoch':
+            metrics = None
+        else:
+            metrics = {key : item.item() for key, item in metrics.items()}
+    return loss.item(), metrics
+```
+
+Any Implementation must return the float loss and dict of float metrics
+
+### Loss Function
+`def loss_func(y_pred, y)` must be defined in the same scope as `def train_step(**kwargs)` and `def test_step(**kwargs)`, and must be available to be called within these methods.
+The following is a sample implementation using Cross-Entropy loss:
+
+```
+def loss_func(y_pred, y):
+    return torch.nn.functional.cross_entropy(
+        y_pred, y
+    )
+```
 
