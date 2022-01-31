@@ -2,7 +2,7 @@
 The API provides a configurable interface for training a PyTorch Image Classifier.
 Any configuration in done using `params`, a python `dict` containing all configurable options of the API.
 The following is an example  `params` dict declared in [constants.py](constants.py).
-'''
+```
 params = { 
     'GOOGLE_APPLICATION_CREDENTIALS' : 'neuroengineering-334116-422f8a1aefd9.json',
     'PUB_SUB_TOPIC'                  : 'python-tester',
@@ -205,6 +205,19 @@ params = {
     'eval_metric_compute_freq'       : 'epoch',
     'eval_batch_size'                : 1,
 }
-'''
+```
 The keys are named so as to signify their meaning in standard ML terminology.
-
+Please modify this config file to change training configurations.
+The following are the declared keys for Google Pub/Sub config:
+- `GOOGLE_APPLICATION_CREDENTIALS`: name of config.json for Google Cloud Compute Service Account for Google Pub/Sub Access
+- `PUB_SUB_TOPIC` : Google Pub/Sub topic to publish paylod to. The topic must be already created, else an error will be raised
+- `PUB_SUB_PROJECT` : Project Name for service account used
+- `PUB_SUB_SUBSCRIPTION` : Subscription name to subscribe for pulling messages from Google Pub/Sub. The subscription must be created with the topic.
+- `TIMEOUT` : Timeout for Google Pub/Sub
+The following are the declared keys for Apache Kafka config:
+- `KAFKA_HOST` : Host for Apache Kafka Broker. Defaut port: 9092 used
+- `KAFKA_TOPIC` : Kafka Topic to publish to and subscribe from
+The following are the declared keys for Deep Learning config:
+- `batch_size`: Batch Size to be used during training
+- `image_height` : Image Height input to the model
+- `image_width` : Image Width input to the model
