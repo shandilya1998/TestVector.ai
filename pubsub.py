@@ -42,7 +42,7 @@ def consume_payload(params, subscription, callback, subscriber, **kwargs):
 if __name__ == '__main__':
     publisher = ps.PublisherClient()
     step = 0
-    img = cv2.imread(os.path.join('assets', 'FashionMNIST_0.png'), cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread(os.path.join('data', 'test', 'FashionMNIST_0.png'), cv2.IMREAD_GRAYSCALE)
     while True:
         print("===================================")
         payload = {"data" : 'Payload Data', "timestamp": time.time(), "image" : img.tolist()}

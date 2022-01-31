@@ -38,7 +38,7 @@ def consume_payload(params, consumer, topic, callback, **kwargs):
 def start_producing():
     publisher = kf.KafkaProducer(bootstrap_servers = params['KAFKA_HOST'])
     step = 0
-    img = cv2.imread(os.path.join('assets', 'FashionMNIST_0.png'), cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread(os.path.join('data', 'test', 'FashionMNIST_0.png'), cv2.IMREAD_GRAYSCALE)
     while True:
         print("===================================")
         #cv2.imshow('original', img)

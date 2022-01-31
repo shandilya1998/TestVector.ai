@@ -503,4 +503,7 @@ Run [kf.py](kf.py) for streaming demo.
 [start_kafka.sh](start_kafka.sh) must be executed and topics must be created using Apache Kafka console scripts before running the script.
 
 
+# Classificaiton Application
 
+Using the Train and Streaming API, sample application for prediction on the FashionMNIST dataset are provided in [app_pubsub.py](app_pubsub.py) and [app_kafka.py](app_kafka.py).
+Both the application simulations use the data in [data/test](data/test) which are streamed to the prediction model (stored in the folder [logs](logs)) for prediction. The Input images are visualised using open cv and the prediction output and the appropriate targets are printed to the console. The predictions can be further processed or sent to other services by modifying `def process_payload(message)`.
