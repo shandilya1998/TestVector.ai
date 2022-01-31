@@ -506,4 +506,9 @@ Run [kf.py](kf.py) for streaming demo.
 # Classificaiton Application
 
 Using the Train and Streaming API, sample application for prediction on the FashionMNIST dataset are provided in [app_pubsub.py](app_pubsub.py) and [app_kafka.py](app_kafka.py).
-Both the application simulations use the data in [data/test](data/test) which are streamed to the prediction model (stored in the folder [logs](logs)) for prediction. The Input images are visualised using open cv and the prediction output and the appropriate targets are printed to the console. The predictions can be further processed or sent to other services by modifying `def process_payload(message)`.
+Both the application simulations use the data in [data/test](data/test) which are streamed to the prediction model (stored in the folder [logs](logs)) for prediction.
+The Input images are visualised using open cv and the prediction output and the appropriate targets are printed to the console.
+The predictions can be further processed or sent to other services by modifying `def process_payload(message)`.
+
+Training for the model was performed on Google Colab using the notebook [Vector_ai.ipynb](Vector_ai.ipynb).
+The output logs and model files can be found in the google drive link [here](https://drive.google.com/drive/folders/1Lt7lyY--mhfE6c0AfVpq48Y7-a1OoKvO?usp=sharing).
