@@ -161,66 +161,6 @@ params = {
                                             }
                                         ],
     'device'                         : 'cuda' if torch.cuda.is_available() else 'cpu',
-    'mode'                           : 'notebook'
-}
-
-t = {
-    'net_arch'                       : [    
-                                            {
-                                                'class': torch.nn.Conv2d,
-                                                'kwargs' : {
-                                                    'in_channels' : 1,
-                                                    'out_channels' : 32,
-                                                    'kernel_size' : 5,
-                                                    'stride' : 1,
-                                                    'padding' : 0,
-                                                }
-                                            },
-                                            {
-                                                'class' : torch.nn.ReLU,
-                                                'kwargs' : {}
-                                            },      
-                                            {       
-                                                'class': torch.nn.Conv2d,
-                                                'kwargs' : {
-                                                    'in_channels' : 32,
-                                                    'out_channels' : 64,
-                                                    'kernel_size' : 3,
-                                                    'stride' : 2,
-                                                    'padding' : 0,
-                                                }
-                                            },
-                                            {
-                                                'class' : torch.nn.ReLU,
-                                                'kwargs' : {}
-                                            },
-                                            {
-                                                'class': torch.nn.Conv2d,
-                                                'kwargs' : {
-                                                    'in_channels' : 64,
-                                                    'out_channels' : 32,
-                                                    'kernel_size' : 3,
-                                                    'stride' : 1,
-                                                    'padding' : 0,
-                                                }
-                                            },      
-                                            {       
-                                                'class' : torch.nn.ReLU,
-                                                'kwargs' : {}
-                                            }, 
-                                            {   
-                                                'class': torch.nn.Conv2d,
-                                                'kwargs' : {
-                                                    'in_channels' : 32,
-                                                    'out_channels' : 8,
-                                                    'kernel_size' : 3,
-                                                    'stride' : 1, 
-                                                    'padding' : 0,
-                                                }
-                                            },
-                                            {    
-                                                'class' : torch.nn.ReLU,
-                                                'kwargs' : {}
-                                            },
-                                        ],
+    'mode'                           : 'notebook',
+    'eval_metric_compute_freq'        : 'epoch'
 }

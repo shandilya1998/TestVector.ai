@@ -10,7 +10,8 @@ def train(
         train_step,
         test_step,
         datadir,
-        logdir
+        logdir,
+        **kwargs
     ):
     train_loader = get_dataloader(params, 'train')
     test_loader = get_dataloader(params, 'test')
@@ -33,7 +34,7 @@ def train(
         is_metric_available = False
         for i, (x, y) in enumerate(train_loader):
             x, y = x.to(params['device']), y.to(params['device'])
-            loss, metrics = train_step(x, y, model, optim)
+            loss, metrics = train_step(x, y, model, optim, **kwargs)
             avg_epoch_loss += loss
             writer.add_scalar('loss/train', loss, epoch * len(train_loader) + i)
             if metrics:
@@ -47,7 +48,7 @@ def train(
             avg_val_epoch_loss = 0.0
             for i, (x, y) in enumerate(test_loader):
                 x, y = x.to(params['device']), y.to(params['device'])
-                loss, metrics = test_step(x, y, model)
+                loss, metrics = test_step(x, y, model, **kwargs)
                 avg_val_epoch_loss += loss
                 writer.add_scalar('loss/test', loss, (epoch % params['eval_freq']) * len(test_loader) + i)
                 count += 1
@@ -61,6 +62,9 @@ def train(
             avg_val_epoch_loss = avg_val_epoch_loss / count
             print('----------------------------------------------')
             print('Evaluation {} done. Average Loss {:.8f}'.format(int(epoch / params['eval_freq']),  avg_val_epoch_loss))
+            if params['eval_metric_compute_freq'] == 'epoch' and 'test_torchmetrics' in kwargs.keys():
+                metrics = kwargs['test_torchmetrics'].compute()
+                print(' '.join(['{} {:.8f}'.format(key, item.item()) for key, item in metrics.items()]))
             print('----------------------------------------------')
             avg_val_metric = avg_val_metric / count
         if epoch % params['save_freq'] == 0:
