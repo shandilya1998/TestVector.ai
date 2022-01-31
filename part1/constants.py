@@ -128,7 +128,7 @@ params = {
                                             }
                                         ],
     'n_classes'                      : 10,
-    'num_epochs'                     : 100,
+    'num_epochs'                     : 1000,
     'eval_freq'                      : 5,
     'save_freq'                      : 5,
     'optim_class'                    : torch.optim.SGD,
