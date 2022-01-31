@@ -223,3 +223,26 @@ The following are the declared keys for Deep Learning config:
 - `batch_size`: Batch Size to be used during training
 - `image_height` : Image Height input to the model
 - `image_width` : Image Width input to the model
+- `shuffle_dataset` : Boolean to shuffle dataset at epoch end
+- `flip_images` : Boolean to apply random horizontal and vertical flip
+- `flip_probability` : Probability of applying random horizontal and vertical flip
+- `normalise_images` : Boolean to normalise data points
+- `manual_seed` : Manual Seed for pseudo random number generators for numpy and torch
+- `is_image_color` : Boolean, True if input images are color. Default is False. API not tested for color images but mechanism is provided
+- `normalise_mean` : List of data normalisation tranform mean. Length one list for grayscale images, 3 for color images
+- `normalise_std` : List of data normalisation tranform standard deviation. Length one list for grayscale images, 3 for color images
+- `additional_transforms` : List of additional transforms to be applied to the data. Default value None if no additional transforms needed
+- `net_arch` : List of Dict containing classifier declarationg
+- `n_classes` : Number of classes for the classification problem
+- `num_epochs` : Number of training epochs
+- `eval_freq` : Evaluation done after every `params['eval_freq']` epochs
+- `save_freq` : Model saved after very `params['save_freq']` epochs
+- `optim_class` : Optimiser class used for training
+- `optim_kwargs` : Arguments other than learning rate needed to initialise optimiser
+- `learning_rate` : Learning Rate for Deep Learning
+- `learning_rate_schedule` : List of Dicts of Pytorch Learning Rate Scheduler class and arguments needed for initialisation
+- `device` : `cuda` or `cpu`. Default Programmatically decided
+- `eval_metric_compute_freq` : Compute Evaluation Metrics every `params['eval_metric_compute_freq']`. Default `epoch`.
+- `eval_batch_size` : Evaluation Batch Size. Default `1`
+
+
