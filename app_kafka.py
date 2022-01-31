@@ -13,13 +13,15 @@ import threading
 import kafka as kf
 
 if __name__ == '__main__':
-    model_name = 'model_epoch_0.pt'
+    model_name = 'model_epoch_995.pt'
     params['batch_size'] = params['eval_batch_size']
     test_loader = get_dataloader(params, 'test')
     model = build_classifier(params).to(params['device'])
-    state_dict = torch.load(os.path.join('logs', model_name))
+    state_dict = torch.load(
+        os.path.join('logs', model_name),
+        map_location = torch.device(params['device'])
+    )
     model.load_state_dict(state_dict['model_state_dict'])
-    model.eval()
 
     def process_payload(message):
         message = json.loads(message.value)
@@ -34,15 +36,20 @@ if __name__ == '__main__':
             ) / 255.0).astype(np.float32)
         )
         y_pred = model(x)
-        print('Processed Output: {}'.format(torch.argmax(y_pred, -1).detach().cpu().numpy()[0]))
+        print('Processed Output: {} Target Value {}'.format(torch.argmax(y_pred, -1).detach().cpu().numpy()[0], message['target']))
 
     def start_producing():
+        """
+            Multiple Publishers can be simulated by creating 
+            multiple `start_producing()`
+        """
         publisher = kf.KafkaProducer(bootstrap_servers = params['KAFKA_HOST'])
         step = 0 
         img = cv2.imread(os.path.join('assets', 'FashionMNIST_0.png'), cv2.IMREAD_GRAYSCALE)
         for i, (x, y) in enumerate(test_loader):
             img = x.detach().cpu().numpy()[0][0]
-            payload = {"data" : "Payload data", "image" : img.tolist(), "timestamp": time.time()}
+            y = int(y.detach().cpu().numpy()[0])
+            payload = {"data" : "Payload data", "image" : img.tolist(), "timestamp": time.time(), "target" : y}
             print("Sending payload")
             publish_payload(params, publisher, payload, params['KAFKA_TOPIC'])
             step += 1

@@ -16,9 +16,6 @@ def process_payload(message):
     message.ack()
     message = json.loads(message.data)
     print("Received {}.".format(message))
-    cv2.imshow('decoded', np.array(message['image'], dtype = np.uint8))
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        pass
     
 # producer function to push a message to a topic
 def publish_payload(params, publisher, payload, topic, **kwargs):        
