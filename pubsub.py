@@ -48,7 +48,6 @@ if __name__ == '__main__':
     img = cv2.imread(os.path.join('assets', 'FashionMNIST_0.png'), cv2.IMREAD_GRAYSCALE)
     while True:
         print("===================================")
-        cv2.imshow('original', img)
         payload = {"data" : 'Payload Data', "timestamp": time.time(), "image" : img.tolist()}
         print(f"Sending payload: {payload}.")
         publish_payload(params, publisher, payload, params['PUB_SUB_TOPIC'])
