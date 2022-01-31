@@ -1,1 +1,0 @@
-from gcloud import client
